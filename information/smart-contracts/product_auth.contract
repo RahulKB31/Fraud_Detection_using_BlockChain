@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ProductAuth {
+    struct Product {
+        string serialNumber;
+        address manufacturer;
+        uint256 createdAt;
+        Checkpoint[] checkpoints;
+    }
+
+    struct Checkpoint {
+        uint256 timestamp;
+        string location;
+    }
+
+    mapping(string => Product) public products;
+
+    event ProductRegistered(string serialNumber, address manufacturer);
+    event CheckpointAdded(string serialNumber, string location);
+
+    function registerProduct(string memory serialNumber) public {
+        require(bytes(products[serialNumber].serialNumber).length == 0, "Product already registered");
+        products[serialNumber] = Product({
+            serialNumber: serialNumber,
+            manufacturer: msg.sender,
+            createdAt: block.timestamp,
+            checkpoints: new Checkpoint[](0)
+        });
+        emit ProductRegistered(serialNumber, msg.sender);
+    }
+
+    function addCheckpoint(string memory serialNumber, string memory location) public {
+        require(bytes(products[serialNumber].serialNumber).length > 0, "Product not found");
+        products[serialNumber].checkpoints.push(Checkpoint({
+            timestamp: block.timestamp,
+            location: location
+        }));
+        emit CheckpointAdded(serialNumber, location);
+    }
+
+    function verifyProduct(string memory serialNumber) public view returns (Product memory) {
+        require(bytes(products[serialNumber].serialNumber).length > 0, "Product not found");
+        return products[serialNumber];
+    }
+}

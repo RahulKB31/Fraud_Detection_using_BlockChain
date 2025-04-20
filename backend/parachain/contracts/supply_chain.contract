@@ -1,0 +1,44 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SupplyChain {
+    struct Shipment {
+        string productId;
+        address sender;
+        address receiver;
+        string status; // e.g., "In Transit", "Delivered"
+        uint256 timestamp;
+    }
+
+    mapping(string => Shipment[]) public shipments;
+
+    event ShipmentCreated(string productId, address sender, address receiver, string status);
+    event ShipmentUpdated(string productId, string status);
+
+    // Create a new shipment
+    function createShipment(string memory productId, address receiver) public {
+        shipments[productId].push(Shipment({
+            productId: productId,
+            sender: msg.sender,
+            receiver: receiver,
+            status: "In Transit",
+            timestamp: block.timestamp
+        }));
+        emit ShipmentCreated(productId, msg.sender, receiver, "In Transit");
+    }
+
+    // Update the status of a shipment
+    function updateShipmentStatus(string memory productId, string memory newStatus) public {
+        require(shipments[productId].length > 0, "Shipment not found");
+        shipments[productId][shipments[productId].length - 1].status = newStatus;
+        shipments[productId][shipments[productId].length - 1].timestamp = block.timestamp;
+        emit ShipmentUpdated(productId, newStatus);
+    }
+
+    // Get the latest shipment details for a product
+    function getLatestShipment(string memory productId) public view returns (string memory, address, address, string memory, uint256) {
+        require(shipments[productId].length > 0, "Shipment not found");
+        Shipment memory shipment = shipments[productId][shipments[productId].length - 1];
+        return (shipment.productId, shipment.sender, shipment.receiver, shipment.status, shipment.timestamp);
+    }
+}

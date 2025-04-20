@@ -1,0 +1,18 @@
+{
+    "name": "backend-api",
+    "version": "1.0.0",
+    "description": "Backend API for Fake Product Identification",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "@polkadot/api": "^7.15.1",
+        "axios": "^1.4.0",
+        "backend-api": "file:",
+        "body-parser": "^1.20.3",
+        "dotenv": "^16.5.0",
+        "express": "^4.21.2",
+        "qrcode": "^1.5.4"
+    }
+}
